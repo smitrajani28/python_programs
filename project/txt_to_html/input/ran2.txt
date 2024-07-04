@@ -1,2 +1,0 @@
-B-b-This is a lower case bulletin point. This is an upper case bold text.
-b-B-hey i am good

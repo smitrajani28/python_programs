@@ -18,19 +18,11 @@ for i in range(len(fname)):
         try:
             if list1[j].find("B-") >= 0:
                 list1[j]= list1[j].replace("B-", "")
-                if list1[j].find("b-") >= 0:
-                    list1[j] = list1[j].replace("b-", "")
-                    list1[j] = "<br><li><b>" + line + "</b></li><br><br>"
-                else:
-                    list1[j] = "<br><b>" + list1[j] + "</b><br><br>"
+                list1[j] = "<b>" + list1[j] + "</b><br>"
 
             if list1[j].find("b-") >= 0:
                 list1[j] = list1[j].replace("b-", "")
-                if list1[j].find("B-") >= 0:
-                    list1[j] = list1[j].replace("B-", "")
-                    list1[j] = "<br><li><b>" + list1[j] + "</b></li><br><br>"
-                else:
-                    list1[j] = "<li>" + list1[j] + "</li>"
+                list1[j] = "<li>" + list1[j] + "</li>"
             
             if list1[j].find("p-") >= 0:
                 list1[j] = list1[j].replace("p-", "")
@@ -51,9 +43,25 @@ for i in range(len(fname)):
                 list1[j] = "<p>&nbsp;&nbsp;&nbsp;&nbsp;" + paragraph + "</p>"
                 
 
-            editedlines += list1[j] + "\n"
         except:
             pass
+
+    count = 0
+    for j in range(len(list1)):
+        try:
+            if ((not list1[j].startswith("<li>")) and (count > 0)):
+                list1[j] = "</ul>" +list1[j] 
+                count -=1
+            elif ((list1[j].endswith("</li>")) and (j == len(list1)-1)):
+                list1[j] =  list1[j] + "</ul>"
+            if (list1[j].startswith("<li>")) and (count == 0):
+                list1[j] = "<ul>" + list1[j]
+                count +=1
+        except:
+            pass
+
+    for j in range(len(list1)):        
+        editedlines += list1[j] 
 
     filename = fname[i]
     filename = re.sub(r'\.txt$', '.html', filename)
