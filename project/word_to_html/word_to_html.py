@@ -90,4 +90,4 @@ for i in range(len(fname)):
 
 print("Batch Converted into HTML file...")
 print("Creating Zip file...")
-zip_folder(f"{enter_path}/{today}",f"{enter_path}")
+zip_folder(f"{enter_path}/{today}",f"{enter_path}/{today}")
