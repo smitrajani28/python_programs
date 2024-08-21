@@ -41,13 +41,10 @@ def convert_list_to_html(doc):
     for para in doc.paragraphs:
         if "JOB DESCRIPTION" in para.text:
             index = 0
-            print("in 0")
         elif "JOB RESPONSIBILITY" in para.text:
             index = 1
-            print("in 1")
         elif "JOB QUALIFICATIONS" in para.text:
             index = 2
-            print("in 2")
         if is_bullet_point(para):
             if not in_bullet_list:
                 # html_content += "<ul>"
