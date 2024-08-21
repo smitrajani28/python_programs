@@ -1,3 +1,6 @@
+Note:
+        For better experiece, it is preferable to word file which is created by word 2013 or later
+        or it could give you some bugs or error.
 To use "word_to_html" file, you should follow this steps:
 step 1: make sure you have python in your pc(Recommanded python version 3.12)
         To install python download file from this URL and install donwloaded file:

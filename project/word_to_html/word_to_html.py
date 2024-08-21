@@ -32,35 +32,60 @@ def convert_paragraph_to_html(paragraph):
 
 def convert_list_to_html(doc):
     """Convert the lists in a Word document to HTML."""
-    html_content = ""
+    # html_content = ""
     in_bullet_list = False
+    html_list = ["","",""]
+    index = 0
+
 
     for para in doc.paragraphs:
+        if "JOB DESCRIPTION" in para.text:
+            index = 0
+            print("in 0")
+        elif "JOB RESPONSIBILITY" in para.text:
+            index = 1
+            print("in 1")
+        elif "JOB QUALIFICATIONS" in para.text:
+            index = 2
+            print("in 2")
         if is_bullet_point(para):
             if not in_bullet_list:
-                html_content += "<ul>"
+                # html_content += "<ul>"
+                html_list[index] += "<ul>"
                 in_bullet_list = True
-            html_content += convert_paragraph_to_html(para)
+            # html_content += convert_paragraph_to_html(para)
+            html_list[index] += convert_paragraph_to_html(para)
         else:
             if in_bullet_list:
-                html_content += "</ul>"
+                # html_content += "</ul>"
+                html_list[index] += "</ul>"
                 in_bullet_list = False
             
-            html_content += convert_paragraph_to_html(para)
+            # html_content += convert_paragraph_to_html(para)
+            html_list[index] += convert_paragraph_to_html(para)
+
+
 
     if in_bullet_list:
-        html_content += "</ul>"
+        # html_content += "</ul>"
+        html_list[index] += "</ul>"
 
-    return html_content
+    return html_list
 
 def convert_docx_to_html(docx_path, html_path):
     """Main function to convert DOCX to HTML with list handling and text formatting."""
     doc = Document(docx_path)
-    html_content = "<html><body>"
-    html_content += convert_list_to_html(doc)
-    html_content += "</body></html>"
-    with open(html_path, 'w', encoding='utf-8') as html_file:
-        html_file.write(html_content)
+    final_html =[]
+    for i in range(3):
+        html_content = "<html><body>"
+        html_content += convert_list_to_html(doc)[i]
+        html_content += "</body></html>"
+        final_html.append(html_content)
+
+    for i in range(3):
+        with open(html_path[i], 'w', encoding='utf-8') as html_file:
+            html_file.write(final_html[i])
+        print(f"{os.path.basename(html_path[i])} created.....")
 
 def zip_folder(folder_path, output_zip):
     if not os.path.isdir(folder_path):
@@ -79,14 +104,17 @@ fname = [f for f in allfiles if f.endswith('.docx')]
 print("extracting text from files...")
 for i in range(len(fname)):
     filename = fname[i]
-    filename = re.sub(r'\.docx$', '.html', filename)
+    filename1 = re.sub(r'\.docx$', '_JOB DESCRIPTION.html', filename)
+    filename2 = re.sub(r'\.docx$', '_JOB RESPONSIBILITY.html', filename)
+    filename3 = re.sub(r'\.docx$', '_JOB QUALIFICATIONS.html', filename)
     # datetime1 = datetime.datetime.now()
     # today = f"{datetime1.year}-{datetime1.month}-{datetime1.day}"
     today = os.path.basename(enter_path)
     if not os.path.exists(f"{enter_path}/{today}"):
         os.mkdir(f"{enter_path}/{today}")
-    convert_docx_to_html(f"{enter_path}/{fname[i]}",f"{enter_path}/{today}/{filename}")
-    print(f"{filename} created.....")
+
+    html_files = [f"{enter_path}/{today}/{filename1}",f"{enter_path}/{today}/{filename2}",f"{enter_path}/{today}/{filename3}"]
+    convert_docx_to_html(f"{enter_path}/{fname[i]}",html_files)
 
 print("Batch Converted into HTML file...")
 print("Creating Zip file...")
