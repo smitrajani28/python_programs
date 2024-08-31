@@ -1,10 +1,14 @@
-from docx import Document
+import os
+enter_path = "E:\\STUDY\\Python\\python_programs\\project\\word_to_html"
+today = os.path.basename(enter_path)
 
-doc = Document("E:\STUDY\Python\python_programs\project\word_to_html\Cluster In Charge - Institutional Sales.docx")
-for para in doc.paragraphs:
-    # print(para.text)
-    print(para.style.name)
-    # print(para.style.numbering.bullet)
-    # print(para.bullet_format)
-    # for base in para:
-    #     print(base)
+for filename in os.listdir(f"{enter_path}"):
+    print(filename)
+    file_path = os.path.join(f"{enter_path}/{today}",filename)
+    print(file_path)
+    # try:
+    #     if(os.path.isfile(file_path)):
+    #         os.remove(file_path)
+    # except OSError as error:
+    #     print(error)
+    print(os.path.basename(filename))    

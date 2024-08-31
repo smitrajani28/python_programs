@@ -1,6 +1,7 @@
 import os
 import re
 import shutil
+import tempfile
 import datetime
 from docx import Document
 
@@ -41,30 +42,28 @@ def convert_list_to_html(doc):
     for para in doc.paragraphs:
         if "JOB DESCRIPTION" in para.text:
             index = 0
+            continue
         elif "JOB RESPONSIBILITY" in para.text:
             index = 1
+            continue
         elif "JOB QUALIFICATIONS" in para.text:
             index = 2
+            continue
         if is_bullet_point(para):
             if not in_bullet_list:
-                # html_content += "<ul>"
                 html_list[index] += "<ul>"
                 in_bullet_list = True
-            # html_content += convert_paragraph_to_html(para)
             html_list[index] += convert_paragraph_to_html(para)
         else:
             if in_bullet_list:
-                # html_content += "</ul>"
                 html_list[index] += "</ul>"
                 in_bullet_list = False
             
-            # html_content += convert_paragraph_to_html(para)
             html_list[index] += convert_paragraph_to_html(para)
 
 
 
     if in_bullet_list:
-        # html_content += "</ul>"
         html_list[index] += "</ul>"
 
     return html_list
@@ -88,9 +87,22 @@ def zip_folder(folder_path, output_zip):
     if not os.path.isdir(folder_path):
         print(f"Folder '{folder_path}' does not exist.")
         return
+    zip_files = ["JOB DESCRIPTION", "JOB RESPONSIBILITY", "JOB QUALIFICATIONS"]
+    for i in range(len(zip_files)):
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            for file in os.listdir(folder_path):
+                file_address = os.path.join(folder_path,file)
+                if file.endswith(f"_{zip_files[i]}.html"):
+                    shutil.copy(file_address, tmpdirname)
+                    try:
+                        if(os.path.isfile(file_address)):
+                            os.remove(file_address)
+                    except OSError as error:
+                        print(error)
+            shutil.make_archive(f"{output_zip}/{zip_files[i]}", 'zip', tmpdirname)
+            print(f"successfully zipped file '{zip_files[i]}'.")
+
     
-    shutil.make_archive(output_zip, 'zip', folder_path)
-    print(f"Folder '{folder_path}' successfully zipped into '{output_zip}'.")
 
 
 
@@ -99,13 +111,13 @@ print("getting files from given location...")
 allfiles = os.listdir(f"{enter_path}")
 fname = [f for f in allfiles if f.endswith('.docx')]
 print("extracting text from files...")
+# zip_files = []
 for i in range(len(fname)):
     filename = fname[i]
+    zipname = re.sub(r'\.docx$', '', filename)
     filename1 = re.sub(r'\.docx$', '_JOB DESCRIPTION.html', filename)
     filename2 = re.sub(r'\.docx$', '_JOB RESPONSIBILITY.html', filename)
     filename3 = re.sub(r'\.docx$', '_JOB QUALIFICATIONS.html', filename)
-    # datetime1 = datetime.datetime.now()
-    # today = f"{datetime1.year}-{datetime1.month}-{datetime1.day}"
     today = os.path.basename(enter_path)
     if not os.path.exists(f"{enter_path}/{today}"):
         os.mkdir(f"{enter_path}/{today}")
@@ -113,6 +125,6 @@ for i in range(len(fname)):
     html_files = [f"{enter_path}/{today}/{filename1}",f"{enter_path}/{today}/{filename2}",f"{enter_path}/{today}/{filename3}"]
     convert_docx_to_html(f"{enter_path}/{fname[i]}",html_files)
 
-print("Batch Converted into HTML file...")
-print("Creating Zip file...")
+
 zip_folder(f"{enter_path}/{today}",f"{enter_path}/{today}")
+print("Batch Converted into HTML file...")
